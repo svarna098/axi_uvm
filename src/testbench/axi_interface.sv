@@ -83,6 +83,54 @@ modport drv (clocking drv_if);
 modport in_mon (clocking in_mon_if );
 modport out_mon (clocking out_mon_if );
 
+property p1;
+  @(posedge clk)
+  disable iff (!rst)
+  AWVALID && !AWREADY |=> (AWVALID throughout AWREADY[->1]);
+endproperty
+
+assert property(p1)
+  else $error("AWVALID became 0 before AWREADY");
+
+
+property p2;
+  @(posedge clk)
+  disable iff (!rst)
+  WVALID && !WREADY |=> (WVALID throughout AWREADY[->1]);
+endproperty
+
+assert property(p2)
+  else $error("WVALID became 0before WREADY");
+
+
+property p3;
+  @(posedge clk)
+  disable iff (!rst)
+  RVALID && !RREADY |=> (RVALID throughout AWREADY[->1]);
+endproperty
+
+assert property(p3)
+  else $error("RVALID became 0 before RREADY");
+
+property p4;
+  @(posedge clk)
+  disable iff (!rst)
+  (AWVALID && AWREADY && WVALID && WREADY)
+  |->  BVALID;
+endproperty
+
+assert property(p4)
+  else $error("BVALID was not asserted after AW/W handshakes");
+/*
+property p5;
+  @(posedge clk)
+  disable iff (!rst)
+   (AWVALID && AWREADY && WVALID && WREADY && (AWADDR > 32'h3C) )|-> ##[1:$] (BRESP == 2'b11);
+endproperty
+
+assert property(p5)
+  else $error("Invalid address did not return DECERR");
+*/
 endinterface
 
 
