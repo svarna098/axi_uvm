@@ -36,8 +36,7 @@ class test1 extends axi_test;
   `uvm_component_utils(test1)
 
   axi_reset_sequence  reset_seq;
-  axi_sequence1 s1;
-  axi_sequence2 s2;
+  axi_write_read_sequence s2;
   axi_write_sequence s3;
   axi_aw_sequence  s4;
   axi_w_sequence  s5;
@@ -47,6 +46,7 @@ class test1 extends axi_test;
   axi_invalid_read_sequence s9;
   axi_ro_write_sequence1 s10;
   axi_wo_read_sequence s11;
+  axi_coverage_sequence s12;
 
   function new(string name="test1", uvm_component parent);
     super.new(name,parent);
@@ -61,8 +61,7 @@ class test1 extends axi_test;
     phase.raise_objection(this);
 
     reset_seq = axi_reset_sequence::type_id::create("reset_seq");
-    s1 = axi_sequence1::type_id::create("s1");
-    s2 = axi_sequence2::type_id::create("s2");
+    s2 = axi_write_read_sequence::type_id::create("s2");
     s3 = axi_write_sequence::type_id::create("s3");
     s4 = axi_aw_sequence::type_id::create("s4");
     s5 = axi_w_sequence::type_id::create("s5");
@@ -72,9 +71,9 @@ class test1 extends axi_test;
     s9 = axi_invalid_read_sequence::type_id::create("s9");
     s10 = axi_ro_write_sequence1::type_id::create("s10");
     s11 = axi_wo_read_sequence::type_id::create("s11");
+    s12 = axi_coverage_sequence::type_id::create("s12");
 
     reset_seq.start(env.in_agnt.seq);
-    s1.start(env.in_agnt.seq);
     s2.start(env.in_agnt.seq);
     s3.start(env.in_agnt.seq);
     s4.start(env.in_agnt.seq);
@@ -85,6 +84,7 @@ class test1 extends axi_test;
     s9.start(env.in_agnt.seq);
     s10.start(env.in_agnt.seq);
     s11.start(env.in_agnt.seq);
+    s12.start(env.in_agnt.seq);
 
     #50;
 
@@ -92,4 +92,3 @@ class test1 extends axi_test;
 
   endtask
 endclass
-
