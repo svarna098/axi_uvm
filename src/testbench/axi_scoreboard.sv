@@ -15,10 +15,13 @@ typedef enum {r_idle, r_data} r_state_t;
 r_state_t r_state;
 
 bit [31:0] addr;
+bit [31:0] Waddr;
+bit [31:0]Wdata;
 bit [31:0] Rdata;
 bit [3:0]  strb;
 bit [1:0] Rresp;
 bit [1:0]Bresp;
+bit Rvalid;
 bit AWready;
 bit ARready;
 bit Wready;
@@ -66,7 +69,7 @@ task compare(trans r);
   else
     `uvm_info("BVALID",$sformatf("FAIL - DUT_BVALID=%0d e_BVALID=%0d",r.BVALID, Bvalid), UVM_NONE)
 
-  if(r.BRESP === e.BRESP)
+  if(r.BRESP === Bresp)
     `uvm_info("BRESP", $sformatf("PASS - DUT_BRESP=%0d e_BRESP=%0d",r.BRESP, Bresp), UVM_NONE)
   else
     `uvm_info("BRESP",$sformatf("FAIL - DUT_BRESP=%0d e_BRESP=%0d",r.BRESP, Bresp), UVM_NONE)
@@ -76,17 +79,17 @@ task compare(trans r);
   else
     `uvm_info("ARREADY",$sformatf("FAIL - DUT_ARREADY=%0d e_ARREADY=%0d",r.ARREADY, ARready), UVM_NONE)
 
-  if(r.RVALID === e.RVALID)
-    `uvm_info("RVALID",$sformatf("PASS - DUT_RVALID=%0d e_RVALID=%0d",r.RVALID, e.RVALID), UVM_NONE)
+  if(r.RVALID === Rvalid)
+    `uvm_info("RVALID",$sformatf("PASS - DUT_RVALID=%0d e_RVALID=%0d",r.RVALID, Rvalid), UVM_NONE)
   else
-    `uvm_info("RVALID", $sformatf("FAIL - DUT_RVALID=%0d e_RVALID=%0d",r.RVALID, e.RVALID), UVM_NONE)
+    `uvm_info("RVALID", $sformatf("FAIL - DUT_RVALID=%0d e_RVALID=%0d",r.RVALID, Rvalid), UVM_NONE)
 
-  if(r.RRESP === e.RRESP)
+  if(r.RRESP === Rresp)
     `uvm_info("RRESP", $sformatf("PASS - DUT_RRESP=%0d e_RRESP=%0d",r.RRESP, Rresp), UVM_NONE)
   else
     `uvm_info("RRESP",$sformatf("FAIL - DUT_RRESP=%0d e_RRESP=%0d",r.RRESP, Rresp), UVM_NONE)
 
-  if(r.RDATA === e.RDATA)
+  if(r.RDATA === Rdata)
     `uvm_info("RDATA",$sformatf("PASS - DUT_RDATA=%0d e_RDATA=%0d",r.RDATA, Rdata), UVM_NONE)
   else
     `uvm_info("RDATA",$sformatf("FAIL - DUT_RDATA=%0d e_RDATA=%0d",r.RDATA, Rdata), UVM_NONE)
@@ -95,14 +98,32 @@ task compare(trans r);
 endtask
 
 task reference();
+  
+ if (!e.rst) begin
+    AWready = 0;
+    Wready = 0;
+    Bvalid = 0;
+    Bresp = 0;
+    Rvalid =0;
+    ARready = 0;
+    Rresp = 0;
+    Rdata  = 0;
+
+    aw_flag = 0;
+    w_flag  = 0;
+
+    state = idle;
+    r_state = r_idle;
+  end
+  else begin
 
  case(state)
 
   idle : begin
 
     AWready = 1;
-    Wready  = 1;
-    Bvalid  = 0;
+    Wready = 1;
+    Bvalid = 0;
 
     aw_flag = 0;
     w_flag  = 0;
@@ -116,16 +137,16 @@ task reference();
   w_both : begin
 
     AWready = 1;
-    Wready  = 1;
+    Wready = 1;
 
     if(e.AWVALID && AWready && (!aw_flag)) begin
-      addr    = e.AWADDR;
+      Waddr = e.AWADDR;
       aw_flag = 1;
     end
 
     if(e.WVALID && Wready && (!w_flag)) begin
-      Rdata    = e.WDATA;
-      strb    = e.WSTRB;
+      Wdata = e.WDATA;
+      strb  = e.WSTRB;
       w_flag  = 1;
     end
 
@@ -145,7 +166,7 @@ task reference();
     Wready  = 0;
 
     if(e.AWVALID && AWready) begin
-      addr    = e.AWADDR;
+      Waddr = e.AWADDR;
       aw_flag = 1;
 
       if(w_flag)
@@ -161,9 +182,9 @@ task reference();
     Wready  = 1;
 
     if(e.WVALID && Wready) begin
-      Rdata    = e.WDATA;
-      strb    = e.WSTRB;
-      w_flag  = 1;
+      Wdata  = e.WDATA;
+      strb   = e.WSTRB;
+      w_flag = 1;
 
       if(aw_flag)
         state = w_resp;
@@ -178,17 +199,17 @@ task reference();
     Wready  = 0;
     Bvalid  = 1;
 
-    if(addr > 32'h3C)
+    if(Waddr > 32'h3C)
       Bresp = 2'b11;
-    else if((addr/4) >= 10 && (addr/4) <= 12)
+    else if((Waddr/4) >= 32'd10 && (Waddr/4) <= 32'd12)
       Bresp = 2'b10;
     else begin
       Bresp = 2'b00;
 
-      if(strb[0]) mem[addr/4][7:0]   = Rdata[7:0];
-      if(strb[1]) mem[addr/4][15:8]  = Rdata[15:8];
-      if(strb[2]) mem[addr/4][23:16] = Rdata[23:16];
-      if(strb[3]) mem[addr/4][31:24] = Rdata[31:24];
+      if(strb[0]) mem[Waddr/4][7:0]   = Wdata[7:0];
+      if(strb[1]) mem[Waddr/4][15:8]  = Wdata[15:8];
+      if(strb[2]) mem[Waddr/4][23:16] = Wdata[23:16];
+      if(strb[3]) mem[Waddr/4][31:24] = Wdata[31:24];
     end
 
     if(e.BREADY)
@@ -203,24 +224,26 @@ endcase
     r_idle: begin
 
       ARready = 1;
+      Rvalid=0;
 
       if(e.ARVALID &&ARready) begin
-        addr    = e.ARADDR;
+        addr  = e.ARADDR;
         r_state = r_data;
       end
 
     end
 
     r_data: begin
+      Rvalid=1;
 
-      if(e.RVALID == 1)begin
+      if(Rvalid == 1)begin
 
       if(addr > 32'h3C) begin
         Rresp = 2'b11;
         Rdata = 32'd0;
       end
 
-      else if((addr/4) >= 13 && (addr/4) <= 14) begin
+      else if((addr/4) >= 32'd13 && (addr/4) <= 32'd14) begin
         Rresp = 2'b10;
         Rdata = 32'd0;
       end
@@ -235,9 +258,9 @@ endcase
 
     end
 end
-  endcase
 
+  endcase
+end
 endtask
 endclass
    
-
