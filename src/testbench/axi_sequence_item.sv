@@ -1,6 +1,6 @@
 class trans extends uvm_sequence_item ;
 	`uvm_object_utils(trans)
-
+        bit rst;
 	rand bit AWVALID;
  	rand bit WVALID;
  	rand bit ARVALID;
@@ -14,16 +14,16 @@ class trans extends uvm_sequence_item ;
        rand bit [3:0] WSTRB;
         logic  AWREADY;
         logic  WREADY;
-        logic  BRESP;
+        logic  [1:0]BRESP;
         logic  BVALID;
         logic  ARREADY;
         logic  [31:0] RDATA;
         logic  [1:0]RRESP;
         logic  RVALID;
  
- // constraint c { AWADDR inside {[0:20]};}
- // constraint c1 { WDATA inside {[0:30]};}
-  //constraint c2 {ARADDR inside {[0:20]};}
+  constraint c { AWADDR inside {32'h04,32'd00,32'h40,32'h28,32'h34,32'd10,32'h08};}
+  constraint c1 { WDATA inside {[0:30]};}
+  constraint c2 {ARADDR inside {32'h04,32'd00,32'h40,32'h28,32'h34,32'd10,32'h08};}
         
   
  function new(string name="trans");
