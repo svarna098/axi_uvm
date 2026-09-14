@@ -30,81 +30,23 @@ class axi_test extends uvm_test ;
  endfunction
 
 endclass
-/*
 
 class test1 extends axi_test;
 
   `uvm_component_utils(test1)
 
-  axi_sequence        s;
-  axi_waddr_sequence  s1;
-  axi_bready_sequence s2;
-  axi_wdata_sequence  s3;
-  axi_sequence1       s4;
-    axi_sequence2       s5;
-
-  function new(string name="test1", uvm_component parent);
-    super.new(name,parent);
-  endfunction
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-  endfunction
-
-  task run_phase(uvm_phase phase);
-
-    phase.raise_objection(this);
-
-    s = axi_sequence       ::type_id::create("s");
-    s1= axi_waddr_sequence ::type_id::create("s1");
-    s2=axi_bready_sequence ::type_id::create("s2");
-    s3 = axi_wdata_sequence ::type_id::create("s3");
-    s4 = axi_sequence1      ::type_id::create("s4");
-     s5 = axi_sequence2      ::type_id::create("s5");
-     begin
-    s.start(env.in_agnt.seq);
-    //#20;
-
-    
-    s1.start(env.in_agnt.seq);
-
-    //#20;
-
-   
-    s2.start(env.in_agnt.seq);
-
-   // #20;
-
-  
-    s3.start(env.in_agnt.seq);
-    
-    s4.start(env.in_agnt.seq);
-    s5.start(env.in_agnt.seq);
-
-    #50;
-
-    phase.drop_objection(this);
-    end
-  endtask
-
-endclass
-*/
-class test1 extends axi_test;
-
-  `uvm_component_utils(test1)
-
-  axi_reset_sequence               reset_seq;
-  axi_sequence1                    s1;
-  axi_sequence2                    s2;
-  axi_write_sequence               s3;
-  axi_aw_sequence                  s4;
-  axi_w_sequence                   s5;
-  axi_read_sequence                s6;
-  axi_valid_write_sequence         s7;
+  axi_reset_sequence  reset_seq;
+  axi_sequence1 s1;
+  axi_sequence2 s2;
+  axi_write_sequence s3;
+  axi_aw_sequence  s4;
+  axi_w_sequence  s5;
+  axi_read_sequence  s6;
+  axi_valid_write_sequence s7;
   axi_invalid_sequence s8;
-  axi_invalid_read_sequence        s9;
-  axi_ro_write_sequence1            s10;
-  axi_wo_read_sequence              s11;
+  axi_invalid_read_sequence s9;
+  axi_ro_write_sequence1 s10;
+  axi_wo_read_sequence s11;
 
   function new(string name="test1", uvm_component parent);
     super.new(name,parent);
@@ -132,7 +74,6 @@ class test1 extends axi_test;
     s11 = axi_wo_read_sequence::type_id::create("s11");
 
     reset_seq.start(env.in_agnt.seq);
-
     s1.start(env.in_agnt.seq);
     s2.start(env.in_agnt.seq);
     s3.start(env.in_agnt.seq);
