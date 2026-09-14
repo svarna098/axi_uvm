@@ -46,18 +46,18 @@ task drive_in(trans d);
      if (!vif.drv_if.rst) begin
 
         vif.drv_if.AWVALID <= 0;
-        vif.drv_if.WVALID  <= 0;
+        vif.drv_if.WVALID <= 0;
         vif.drv_if.ARVALID <= 0;
 
-        vif.drv_if.BREADY  <= 0;
-        vif.drv_if.RREADY  <= 0;
+        vif.drv_if.BREADY <= 0;
+        vif.drv_if.RREADY <= 0;
 
         vif.drv_if.AWADDR  <= 0;
-        vif.drv_if.WDATA   <= 0;
+        vif.drv_if.WDATA  <= 0;
         vif.drv_if.ARADDR  <= 0;
 
-        vif.drv_if.AWPROT  <= 0;
-        vif.drv_if.WSTRB   <= 0;
+        vif.drv_if.AWPROT <= 0;
+        vif.drv_if.WSTRB  <= 0;
   end
 
     
@@ -66,11 +66,11 @@ task drive_in(trans d);
     vif.drv_if.AWVALID <= d.AWVALID;
     vif.drv_if.WVALID  <= d.WVALID;
     vif.drv_if.ARVALID <= d.ARVALID;
-    vif.drv_if.RREADY  <= d.RREADY;
-
-    vif.drv_if.ARPROT  <= d.ARPROT;
-    vif.drv_if.WSTRB   <= d.WSTRB;
-    vif.drv_if.AWPROT  <= d.AWPROT;
+    vif.drv_if.RREADY <= d.RREADY;
+    vif.drv_if.AWPROT <= d.AWPROT; 
+    vif.drv_if.ARPROT <= d.ARPROT;
+    vif.drv_if.WSTRB  <= d.WSTRB;
+    vif.drv_if.AWPROT <= d.AWPROT;
       
     if (d.AWVALID && aw_flag == 0) begin
 
@@ -86,14 +86,14 @@ task drive_in(trans d);
 
     end
 
-    if (aw_flag == 1 &&d.AWVALID &&vif.drv_if.AWREADY) begin
+    if (aw_flag == 1 && d.AWVALID && vif.drv_if.AWREADY) begin
 
         aw_flag = 0;
 
 
     end
 
-    if (w_flag == 1 && d.WVALID&& vif.drv_if.WREADY) begin
+    if (w_flag == 1 && d.WVALID && vif.drv_if.WREADY) begin
 
         w_flag = 0;
   
@@ -115,5 +115,3 @@ task drive_in(trans d);
 endtask
 
 endclass
-
-
