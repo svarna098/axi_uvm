@@ -14,38 +14,20 @@ class axi_reset_sequence extends uvm_sequence #(trans);
   endclass
 
 
-class axi_sequence1 extends uvm_sequence #(trans);
-  `uvm_object_utils(axi_sequence1)
+class axi_write_read_sequence extends uvm_sequence #(trans);
+  `uvm_object_utils(axi_write_read_sequence)
 
-  function new(string name="axi_sequence1");
+  function new(string name="axi_write_read_sequence");
     super.new(name);
   endfunction
 
   task body();
     req=trans::type_id::create("req");
     start_item(req);
-    assert(req.randomize() with {ARVALID == 1; AWVALID == 0; WVALID == 0; RREADY == 1; BREADY == 0; ARADDR == 32'd16;});
+    assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 1;RREADY==1; BREADY == 1; AWADDR == 32'h08; WDATA == 32'd20; WSTRB == 4'b1111;});
     finish_item(req);
   endtask
   endclass
-
-
-class axi_sequence2 extends uvm_sequence #(trans);
-  `uvm_object_utils(axi_sequence2)
-
-  function new(string name="axi_sequence2");
-    super.new(name);
-  endfunction
-
-  task body();
-
-    req=trans::type_id::create("req");
-    start_item(req);
-    assert(req.randomize() with {ARVALID == 1; AWVALID == 1; WVALID == 1; RREADY == 1; BREADY == 1; ARADDR == 32'd16; AWADDR == 32'd16;});
-    finish_item(req);
-  endtask
-  endclass
-
 
 class axi_write_sequence extends uvm_sequence #(trans);
   `uvm_object_utils(axi_write_sequence)
@@ -57,7 +39,7 @@ class axi_write_sequence extends uvm_sequence #(trans);
   task body();
     req=trans::type_id::create("req");
     start_item(req);
-    assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 0; BREADY == 1; AWADDR == 32'h04; WDATA == 32'hA5; WSTRB == 4'b1111;});
+    assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 0; BREADY == 1; AWADDR == 32'h04; WDATA == 32'd20; WSTRB == 4'b1111;});
     finish_item(req);
   endtask
   endclass
@@ -89,7 +71,7 @@ class axi_w_sequence extends uvm_sequence #(trans);
   task body();
     req=trans::type_id::create("req");
     start_item(req);
-    assert(req.randomize() with {AWVALID == 0; WVALID == 1; ARVALID == 0; BREADY == 1; WDATA == 32'h12345678; WSTRB == 4'b1111;});
+    assert(req.randomize() with {AWVALID == 0; WVALID == 1; ARVALID == 0; BREADY == 1; WDATA == 32'd15; WSTRB == 4'b1111;});
     finish_item(req);
   endtask
 endclass
@@ -105,7 +87,7 @@ class axi_read_sequence extends uvm_sequence #(trans);
   task body();
     req=trans::type_id::create("req");
     start_item(req);
-    assert(req.randomize() with {AWVALID == 0; WVALID == 0; ARVALID == 1; RREADY == 1; AWADDR == 32'h04; WDATA == 32'h11111111; WSTRB == 4'b1111;});
+    assert(req.randomize() with {AWVALID == 0; WVALID == 0; ARVALID == 1; RREADY == 1; AWADDR == 32'h04;  WSTRB == 4'b1111;});
     finish_item(req);
   endtask
  endclass
@@ -123,7 +105,7 @@ class axi_valid_write_sequence extends uvm_sequence #(trans);
   task body();
     req=trans::type_id::create("req");
     start_item(req);
-    assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 0; BREADY == 1; AWADDR == 32'h00; WDATA == 32'h55; WSTRB == 4'b1111;});
+    assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 0; BREADY == 1; AWADDR == 32'd00; WDATA == 32'd30; WSTRB == 4'b1111;});
     finish_item(req);
   endtask
  endclass
@@ -139,7 +121,7 @@ class axi_invalid_sequence extends uvm_sequence #(trans);
   task body();
     req=trans::type_id::create("req");
     start_item(req);
-    assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 0; BREADY == 1; AWADDR == 32'h40; WDATA == 32'hCA; WSTRB == 4'b1111;});
+    assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 0; BREADY == 1; AWADDR == 32'h40; WDATA == 32'd17; WSTRB == 4'b1111;});
     finish_item(req);
   endtask
   endclass
@@ -169,7 +151,7 @@ class axi_ro_write_sequence1 extends uvm_sequence #(trans);
   task body();
     req = trans::type_id::create("req");
     start_item(req);
-    assert(req.randomize() with {AWVALID == 1;WVALID  == 1;ARVALID == 0; BREADY  == 1;RREADY  == 0;AWADDR  == 32'h28;WDATA   == 32'h11;WSTRB   == 4'b1111;});
+    assert(req.randomize() with {AWVALID == 1;WVALID  == 1;ARVALID == 0; BREADY  == 1;RREADY  == 0;AWADDR  == 32'h28;WDATA   == 32'd11;WSTRB   == 4'b1111;});
     finish_item(req);
   endtask
  endclass
@@ -188,3 +170,31 @@ class axi_wo_read_sequence extends uvm_sequence #(trans);
     finish_item(req);
   endtask
  endclass
+
+
+class axi_coverage_sequence extends uvm_sequence #(trans);
+  `uvm_object_utils(axi_coverage_sequence)
+
+  function new(string name="axi_coverage_sequence");
+    super.new(name);
+  endfunction
+
+  task body();
+
+    req = trans::type_id::create("req");
+    for (int i=0;i<15;i++) begin
+      start_item(req);
+       assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 0; BREADY == 1; RREADY == 0;  WDATA == 32'd11; WSTRB == i; });
+      finish_item(req);
+    end
+   
+    req = trans::type_id::create("req");
+    for (int i=0;i<30;i++) begin
+      start_item(req);
+       assert(req.randomize() with {AWVALID == 1; WVALID == 1; ARVALID == 1; BREADY == 0; RREADY == 1; WDATA==i; });
+      finish_item(req);
+    end
+
+
+  endtask
+endclass
